@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Magical Christmas Wish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --neon-color: #ff0055;
+            --card-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --neon-color: #00f2ff;
+            --card-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Quicksand', sans-serif;
+            transition: 0.5s;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Galaxy Background for Dark Mode */
+        #galaxy-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            display: none;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+        [data-theme="dark"] #galaxy-bg { display: block; }
+
+        /* Neon Animation */
+        .neon-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px var(--neon-color), 0 0 82px var(--neon-color);
+            animation: pulsate 1.5s infinite alternate;
+        }
+
+        @keyframes pulsate {
+            100% { text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px var(--neon-color), 0 0 80px var(--neon-color); }
+            0% { text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 10px var(--neon-color), 0 0 45px var(--neon-color); }
+        }
+
+        /* Fireworks Canvas */
+        #fw-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .floating-icons { font-size: 3rem; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.5rem;
+            border: none; background: var(--gold); z-index: 100;
+        }
+
+        .share-section {
+            background: var(--card-bg);
+            padding: 20px; border-radius: 20px; display: inline-block;
+            margin-top: 30px; border: 2px solid var(--neon-color);
+        }
+
+        input { padding: 10px; border-radius: 10px; border: 1px solid #ccc; width: 200px; }
+        .btn { background: #25D366; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; cursor: pointer; border: none; }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="galaxy-bg"></div>
+    <canvas id="fw-canvas"></canvas>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+    <div class="container">
+        <div class="floating-icons">🎄 ⛄ 🎂 🎁 💖</div>
+        
+        <h1 style="font-family: 'Mountains of Christmas'; font-size: 4rem;">Merry Christmas!</h1>
+        
+        <div id="greeting-display">
+            <p style="font-size: 1.5rem;">A magical wish from</p>
+            <div id="senderName" class="neon-name">Santa</div>
+        </div>
+
+        <div class="share-section" id="setupSection">
+            <h3>Send your own wish:</h3>
+            <input type="text" id="nameInput" placeholder="Your Name">
+            <button class="btn" onclick="shareToWhatsApp()">Share to WhatsApp 📱</button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.chosic.com/wp-content/uploads/2021/11/We-Wish-You-A-Merry-Christmas.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        // Check URL for Name
+        const urlParams = new URLSearchParams(window.location.search);
+        const nameFromUrl = urlParams.get('name');
+        if (nameFromUrl) {
+            document.getElementById('senderName').innerText = nameFromUrl;
+            // Trigger fireworks on load if it's a received wish
+            setTimeout(launchFireworks, 1000);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+        }
+
+        function launchFireworks() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('bgMusic').play();
+        }
+
+        function shareToWhatsApp() {
+            const name = document.getElementById('nameInput').value;
+            if (!name) return alert("Enter your name first!");
+            
+            // Get current page URL and add name parameter
+            const currentUrl = window.location.href.split('?')[0];
+            const personalLink = `${currentUrl}?name=${encodeURIComponent(name)}`;
+            
+            const message = `✨🎄 *Merry Christmas!* 🎄✨\n\nI have a magical surprise for you! Click the link below to see it:\n\n${personalLink}`;
+            
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Auto-snowflakes
+        setInterval(() => {
+            const snow = document.createElement('div');
+            snow.innerHTML = '❄';
+            snow.style.position = 'fixed';
+            snow.style.top = '-20px';
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.transition = '5s linear';
+            snow.style.zIndex = '1';
+            document.body.appendChild(snow);
+            setTimeout(() => {
+                snow.style.transform = `translateY(110vh) rotate(${Math.random() * 360}deg)`;
+            }, 100);
+            setTimeout(() => snow.remove(), 6000);
+        }, 200);
+    </script>
+</body>
+</html>
